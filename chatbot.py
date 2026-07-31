@@ -2,6 +2,7 @@
 Rule-Based AI Chatbot
 A deterministic chatbot using dictionary-based intent matching.
 Author: Nida Sheraz
+Version: 1.0
 """
 
 KNOWLEDGE_BASE = {
