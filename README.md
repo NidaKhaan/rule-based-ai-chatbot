@@ -1,41 +1,64 @@
 # Rule-Based AI Chatbot
 
-A deterministic, rule-based chatbot built in Python — Project 1 of an AI Engineering training track. Demonstrates control flow, intent matching, and dictionary-based (O(1)) response lookup as a foundation before generative/ML-based systems.
+A deterministic, rule-based chatbot demonstrating control flow, intent matching, and dictionary-based (O(1)) response lookup — the foundational logic layer behind conversational AI systems, before machine learning enters the picture. Built as Project 1 of an AI Engineering training track.
+
+![Chatbot UI](assets/screenshots/chatbot-ui.png)
+
+## Purpose
+
+Every response in this system is explicitly defined, traceable, and predictable — a deterministic "white box" architecture. This project establishes the control-flow foundation that underpins more advanced, generative chatbot systems.
 
 ## Features
-- Continuous conversation loop
-- Case/whitespace-insensitive input sanitization
-- Dictionary-based intent matching (5+ intents)
+
+- Continuous conversation loop with graceful exit handling
+- Case and whitespace-insensitive input sanitization
+- Dictionary-based intent matching (O(1) lookup)
 - Fallback response for unrecognized input
-- Clean exit command
+- Two implementations: command-line (Python) and web interface (Streamlit)
+- Custom dark UI
+
+## Tech Stack
+
+- Python 3.11
+- Streamlit (web interface)
+- Pillow (dynamic favicon generation)
+
+## Project Structure
+rule-based-ai-chatbot/
+├── chatbot.py # Core CLI chatbot logic
+├── test_chatbot.py # Unit tests
+├── requirements.txt
+├── streamlit_app/
+│ └── app.py # Web interface
+├── assets/
+│ └── screenshots/
+├── README.md
+├── LICENSE
+└── .gitignore
+## Run Locally
+
+### CLI version
+```bash
+python chatbot.py
+```
+
+### Web version
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app/app.py
+```
 
 ## Testing
 ```bash
 python -m unittest test_chatbot.py -v
 ```
 
-## Project Structure
-```
-rule-based-ai-chatbot/
-├── chatbot.py
-├── test_chatbot.py
-├── README.md
-├── LICENSE
-└── .gitignore
-```
-
-## Tech Stack
-Python 3.11
-
-## Run Locally
-```bash
-python chatbot.py
-```
-
 ## Roadmap
-- [ ] CLI version (v1)
-- [ ] Web app version (Flask/Streamlit)
-- [ ] Deployment
+
+- [x] CLI version
+- [x] Unit tests
+- [x] Web interface (Streamlit)
 
 ## Author
+
 Nida Sheraz
