@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from chatbot import get_response, sanitize_input, KNOWLEDGE_BASE, EXIT_COMMANDS
 
 
-# ---------- CUSTOM FAVICON ----------
+# ---------- CUSTOM FAVICON (replaces default Streamlit logo in browser tab) ----------
 @st.cache_resource
 def get_favicon():
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
@@ -44,6 +44,8 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "bot", "text": "Hello. I am a rule-based chatbot. Ask me something, or type 'help' to see what I can respond to."}
     ]
+if "pending_input" not in st.session_state:
+    st.session_state.pending_input = None
 
 
 # ---------- FIXED PREMIUM DARK THEME ----------
@@ -160,6 +162,25 @@ header[data-testid="stHeader"] {
 .purpose-box b {
     color: TEXT;
 }
+.suggestions-label {
+    font-size: 12px;
+    color: SUBTEXT;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+div[data-testid="stHorizontalBlock"] button {
+    background: SURFACE;
+    color: TEXT;
+    border: 1px solid BORDER;
+    border-radius: 10px;
+    font-size: 13px;
+    padding: 6px 10px;
+}
+div[data-testid="stHorizontalBlock"] button:hover {
+    border-color: #a855f7;
+    color: #c084fc;
+}
 </style>
 """
 
@@ -182,9 +203,17 @@ with st.sidebar:
     st.markdown(
         "A deterministic, rule-based chatbot built as Project 1 of an AI "
         "engineering training track. It demonstrates control flow, intent "
-        "matching, and dictionary-based response lookup — the architectural "
+        "matching, and dictionary-based response lookup. The architectural "
         "foundation that precedes probabilistic, model-driven AI systems."
     )
+    st.markdown("---")
+    st.markdown("### What this bot understands")
+    st.markdown(
+        "This is a rule-based system. It only responds to exact phrases "
+        "listed below (capitalization does not matter, extra spaces are ignored)."
+    )
+    supported = ", ".join(f"'{k}'" for k in KNOWLEDGE_BASE.keys())
+    st.markdown(supported)
     st.markdown("---")
     st.markdown("**Author:** Nida Sheraz")
 
@@ -211,6 +240,17 @@ purpose_html = (
 st.markdown(purpose_html, unsafe_allow_html=True)
 
 
+# ---------- SUGGESTED PROMPTS ----------
+st.markdown('<div class="suggestions-label">Try asking</div>', unsafe_allow_html=True)
+
+suggestions = ["hello", "what can you do", "who made you", "help"]
+cols = st.columns(len(suggestions))
+for col, phrase in zip(cols, suggestions):
+    with col:
+        if st.button(phrase, key=f"sugg_{phrase}", use_container_width=True):
+            st.session_state.pending_input = phrase
+
+
 # ---------- CHAT HISTORY ----------
 for msg in st.session_state.messages:
     role_class = "user" if msg["role"] == "user" else "bot"
@@ -220,16 +260,22 @@ for msg in st.session_state.messages:
 
 
 # ---------- INPUT ----------
-user_input = st.chat_input("Message the chatbot...")
-
-if user_input:
-    st.session_state.messages.append({"role": "user", "text": user_input})
-
-    clean = sanitize_input(user_input)
+def handle_message(text):
+    st.session_state.messages.append({"role": "user", "text": text})
+    clean = sanitize_input(text)
     if clean in EXIT_COMMANDS:
         reply = KNOWLEDGE_BASE.get("bye", "Goodbye!")
     else:
         reply = get_response(clean, KNOWLEDGE_BASE)
-
     st.session_state.messages.append({"role": "bot", "text": reply})
+
+
+typed_input = st.chat_input("Message the chatbot...")
+
+if st.session_state.pending_input:
+    handle_message(st.session_state.pending_input)
+    st.session_state.pending_input = None
+    st.rerun()
+elif typed_input:
+    handle_message(typed_input)
     st.rerun()
