@@ -27,3 +27,6 @@ dist/
 
 # Environment variables
 .env
+
+#cache
+.mypy_cache/
